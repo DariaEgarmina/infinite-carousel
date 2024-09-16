@@ -1,40 +1,28 @@
-const nextButtonElement = document.querySelector('.slider__button--next');
+//const nextButtonElement = document.querySelector('.slider__button--next');
 const prevButtonElement = document.querySelector('.slider__button--prev');
 
-const goodsContainer = document.querySelector('.goods__list');
-const goods = goodsContainer.children;
+const sliderList = document.querySelector('.slider__list');
+const sliderItems = document.querySelectorAll('.slider__item');
+const sliderItem = document.querySelector('.slider__item');
 
-const removeElement = (element) => {
-  element.remove();
-};
+const itemWidth = sliderItem.offsetWidth;
 
-const moveLeft = (element) => {
-  removeElement(element);
-  goodsContainer.appendChild(element);
-};
+let currentIndex = 0;
 
-const moveRight = (element) => {
-  const beforeElement = goods[0];
-  removeElement(element);
-  goodsContainer.insertBefore(element, beforeElement);
-};
+const moveSliderPrev = () => {
+  currentIndex -= 5;
+  sliderList.style.transform = `translateX(${-currentIndex * itemWidth}px)`;
 
-
-async function delayedLoop(cb) {
-  for (let i = 0; i < 5; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    cb();
+  for (let i = sliderItems.length - 1; i >= sliderItems.length - 5; i--) {
+    const clone = sliderItems[i].cloneNode(true);
+    sliderItems[i].remove();
+    sliderList.insertBefore(clone, sliderList.firstChild);
   }
-}
 
-prevButtonElement.addEventListener('click', () => {
-  delayedLoop(() => {
-    moveLeft(goods[0]);
-  });
-});
+  setTimeout(() => {
+    sliderList.style.transform = '';
+  }, 500);
+};
 
-nextButtonElement.addEventListener('click', () => {
-  delayedLoop(() => {
-    moveRight(goods[goods.length - 1]);
-  });
-});
+// nextButtonElement.addEventListener('click', () => moveSlider('next'));
+prevButtonElement.addEventListener('click', () => moveSliderPrev('prev'));
