@@ -20,24 +20,21 @@ const moveRight = (element) => {
 };
 
 
-async function delayedLoop1() {
+async function delayedLoop(cb) {
   for (let i = 0; i < 5; i++) {
     await new Promise((resolve) => setTimeout(resolve, 200));
-    moveLeft(goods[0]);
-  }
-}
-
-async function delayedLoop2() {
-  for (let i = 0; i < 5; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    moveRight(goods[goods.length - 1]);
+    cb();
   }
 }
 
 prevButtonElement.addEventListener('click', () => {
-  delayedLoop1();
+  delayedLoop(() => {
+    moveLeft(goods[0]);
+  });
 });
 
 nextButtonElement.addEventListener('click', () => {
-  delayedLoop2();
+  delayedLoop(() => {
+    moveRight(goods[goods.length - 1]);
+  });
 });
