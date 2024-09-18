@@ -2,7 +2,7 @@ const ALL_CARDS_AMOUNT = 20;
 const SHOWN_CARDS_AMOUNT = 5;
 
 const prevButtonElement = document.querySelector('.slider__button--prev');
-//const nextButtonElement = document.querySelector('.slider__button--next');
+const nextButtonElement = document.querySelector('.slider__button--next');
 
 const sliderList = document.querySelector('.slider__list');
 const sliderItems = document.querySelectorAll('.slider__item');
@@ -15,6 +15,12 @@ for (let i = sliderItems.length - 1; i >= sliderItems.length - 5; i--) {
   const clone = sliderItems[i].cloneNode(true);
   sliderList.insertBefore(clone, sliderList.firstChild);
 }
+
+for (let i = 0; i < 5; i++) {
+  const clone = sliderItems[i].cloneNode(true);
+  sliderList.append(clone);
+}
+
 sliderList.style.transition = 'none';
 sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
 
@@ -45,5 +51,27 @@ const moveSliderPrev = () => {
   }
 };
 
+const moveSliderNext = () => {
+  sliderList.style.transition = originalTransition;
+  if (currentIndex === 0) {
+    sliderList.style.transform = `translateX(${-10 * itemWidth}px)`;
+    currentIndex = + 1;
+  } else if (currentIndex === 1) {
+    sliderList.style.transform = `translateX(${-15 * itemWidth}px)`;
+    currentIndex = + 2;
+  } else if (currentIndex === 2) {
+    sliderList.style.transform = `translateX(${-20 * itemWidth}px)`;
+    currentIndex = + 3;
+  } else if (currentIndex === 3) {
+    sliderList.style.transform = `translateX(${-25 * itemWidth}px)`;
+
+    setTimeout(() => {
+      sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
+    }, 100);
+
+    currentIndex = 0;
+  }
+};
+
 prevButtonElement.addEventListener('click', () => moveSliderPrev());
-// nextButtonElement.addEventListener('click', () => moveSlider('next'));
+nextButtonElement.addEventListener('click', () => moveSliderNext());
