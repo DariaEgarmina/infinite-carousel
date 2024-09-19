@@ -1,5 +1,4 @@
-const ALL_CARDS_AMOUNT = 20;
-const SHOWN_CARDS_AMOUNT = 5;
+import { debounce } from './util.js';
 
 const prevButtonElement = document.querySelector('.slider__button--prev');
 const nextButtonElement = document.querySelector('.slider__button--next');
@@ -26,52 +25,30 @@ sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
 
 let currentIndex = 0;
 
-const moveSliderPrev = () => {
-  if (currentIndex === 0) {
-    sliderList.style.transition = originalTransition;
-    sliderList.style.transform = '';
-
-    setTimeout(() => {
-      sliderList.style.transform = `translateX(${-ALL_CARDS_AMOUNT * itemWidth}px)`;
-    }, 100);
-
-    currentIndex = + 1;
-  } else if (currentIndex === 1) {
-    sliderList.style.transform = `translateX(${-(ALL_CARDS_AMOUNT - SHOWN_CARDS_AMOUNT) * itemWidth}px)`;
-
-    currentIndex = + 2;
-  } else if (currentIndex === 2) {
-    sliderList.style.transform = `translateX(${-(ALL_CARDS_AMOUNT - SHOWN_CARDS_AMOUNT * 2) * itemWidth}px)`;
-
-    currentIndex = + 3;
-  } else if (currentIndex === 3) {
-    sliderList.style.transform = `translateX(${-(ALL_CARDS_AMOUNT - SHOWN_CARDS_AMOUNT * 3) * itemWidth}px)`;
-
-    currentIndex = 0;
-  }
-};
-
-const moveSliderNext = () => {
+const moveSlider = (direction) => {
   sliderList.style.transition = originalTransition;
-  if (currentIndex === 0) {
-    sliderList.style.transform = `translateX(${-10 * itemWidth}px)`;
-    currentIndex = + 1;
-  } else if (currentIndex === 1) {
-    sliderList.style.transform = `translateX(${-15 * itemWidth}px)`;
-    currentIndex = + 2;
-  } else if (currentIndex === 2) {
-    sliderList.style.transform = `translateX(${-20 * itemWidth}px)`;
-    currentIndex = + 3;
-  } else if (currentIndex === 3) {
-    sliderList.style.transform = `translateX(${-25 * itemWidth}px)`;
+  if (direction === 'next') {
+    currentIndex += 5;
+  } else {
+    currentIndex -= 5;
+  }
 
+  sliderList.style.transform = `translateX(${-(5 + currentIndex) * itemWidth}px)`;
+
+  if (currentIndex === 20) {
     setTimeout(() => {
       sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
     }, 100);
-
     currentIndex = 0;
+  }
+
+  if (currentIndex === -5) {
+    setTimeout(() => {
+      sliderList.style.transform = `translateX(${-20 * itemWidth}px)`;
+    }, 100);
+    currentIndex = 15;
   }
 };
 
-prevButtonElement.addEventListener('click', () => moveSliderPrev());
-nextButtonElement.addEventListener('click', () => moveSliderNext());
+prevButtonElement.addEventListener('click', debounce(() => moveSlider('prev'), 200));
+nextButtonElement.addEventListener('click', debounce(() => moveSlider('next'), 200));
