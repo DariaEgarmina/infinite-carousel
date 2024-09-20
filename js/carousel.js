@@ -1,5 +1,7 @@
 import { debounce } from './util.js';
 
+const CARDS_PER_PAGE = 5;
+
 const prevButtonElement = document.querySelector('.slider__button--prev');
 const nextButtonElement = document.querySelector('.slider__button--next');
 
@@ -10,45 +12,56 @@ const sliderItem = document.querySelector('.slider__item');
 const itemWidth = sliderItem.offsetWidth;
 const originalTransition = getComputedStyle(sliderList).transition;
 
-for (let i = sliderItems.length - 1; i >= sliderItems.length - 5; i--) {
-  const clone = sliderItems[i].cloneNode(true);
-  sliderList.insertBefore(clone, sliderList.firstChild);
-}
+const fragmentLastCards = document.createDocumentFragment();
+const fragmentFirstCards = document.createDocumentFragment();
 
-for (let i = 0; i < 5; i++) {
-  const clone = sliderItems[i].cloneNode(true);
-  sliderList.append(clone);
-}
+const createClones = () => {
+  for (let i = sliderItems.length - 1, j = 0; i >= sliderItems.length - 5, j < 5; i--, j++) {
+    const cloneLastCards = sliderItems[i].cloneNode(true);
+    const cloneFirstCards = sliderItems[j].cloneNode(true);
+
+    fragmentLastCards.append(cloneLastCards);
+    fragmentFirstCards.append(cloneFirstCards);
+
+    sliderList.prepend(fragmentLastCards);
+    sliderList.append(fragmentFirstCards);
+  }
+};
 
 sliderList.style.transition = 'none';
-sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
+sliderList.style.transform = `translateX(${-CARDS_PER_PAGE * itemWidth}px)`;
 
 let currentIndex = 0;
 
 const moveSlider = (direction) => {
   sliderList.style.transition = originalTransition;
+
   if (direction === 'next') {
     currentIndex += 5;
   } else {
     currentIndex -= 5;
   }
 
-  sliderList.style.transform = `translateX(${-(5 + currentIndex) * itemWidth}px)`;
+  sliderList.style.transform = `translateX(${-(CARDS_PER_PAGE + currentIndex) * itemWidth}px)`;
 
-  if (currentIndex === 20) {
+  if (currentIndex === sliderItems.length) {
     setTimeout(() => {
-      sliderList.style.transform = `translateX(${-5 * itemWidth}px)`;
-    }, 100);
+      sliderList.style.transition = 'none';
+      sliderList.style.transform = `translateX(${-CARDS_PER_PAGE * itemWidth}px)`;
+    }, 600);
     currentIndex = 0;
   }
 
-  if (currentIndex === -5) {
+  if (currentIndex === -CARDS_PER_PAGE) {
     setTimeout(() => {
-      sliderList.style.transform = `translateX(${-20 * itemWidth}px)`;
-    }, 100);
+      sliderList.style.transition = 'none';
+      sliderList.style.transform = `translateX(${-sliderItems.length * itemWidth}px)`;
+    }, 600);
     currentIndex = 15;
   }
 };
+
+createClones();
 
 prevButtonElement.addEventListener('click', debounce(() => moveSlider('prev'), 200));
 nextButtonElement.addEventListener('click', debounce(() => moveSlider('next'), 200));
